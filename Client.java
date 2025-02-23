@@ -87,4 +87,16 @@ public class Client {
     {
     }
     
+    private static String escapeJson(String s) 
+    {
+        if (s == null) return "";
+        return s.replace("\"", "\\\"");
+    }
+
+    private static String createJsonPayload(String logLevel, String logMessage, String appName) 
+    {
+        return "{\"logLevel\":\"" + escapeJson(logLevel) + "\", " +
+               "\"logMessage\":\"" + escapeJson(logMessage) + "\", " +
+               "\"appName\":\"" + escapeJson(appName) + "\"}";
+    }
 }
