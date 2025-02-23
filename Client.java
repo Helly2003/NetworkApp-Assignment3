@@ -25,6 +25,9 @@ public class Client {
             System.err.println("Invalid port provided. Exiting.");
             return;
         }
+
+	waitForConnection(serverIP, port);
+
     }
     
     private static void waitForConnection(String serverIP, int port)
