@@ -26,7 +26,26 @@ public class Client {
             return;
         }
 
-	waitForConnection(serverIP, port);
+	    waitForConnection(serverIP, port);
+	
+	    switch (mode) 
+	    {
+            case "manual":
+                runManual(serverIP, port, appName);
+                break;
+            case "auto":
+                runAutomated(serverIP, port, appName);
+                break;
+            case "test":
+                runAutomatedTesting(serverIP, port, appName);
+                break;
+            case "abuse":
+                runAbuseTest(serverIP, port, appName);
+                break;
+            default:
+                System.err.println("Invalid mode! Use: manual, auto, test, or abuse.");
+                System.exit(1);
+        }
 
     }
     
@@ -51,4 +70,21 @@ public class Client {
             }
         }
     }
+
+    private static void runManual(String serverIP, int port, String appName)
+    { 
+    }
+
+    private static void runAutomated(String serverIP, int port, String appName) 
+    {
+    }
+
+    private static void runAutomatedTesting(String serverIP, int port, String appName) 
+    {
+    }
+
+    private static void runAbuseTest(String serverIP, int port, String appName)
+    {
+    }
+    
 }
