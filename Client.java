@@ -27,4 +27,25 @@ public class Client {
         }
     }
     
+    private static void waitForConnection(String serverIP, int port)
+    {
+        System.out.println("Attempting to connect to server at " + serverIP + ":" + port);
+        while (true) 
+        {
+            try (Socket socket = new Socket()) {
+                socket.connect(new InetSocketAddress(serverIP, port), 5000);
+                System.out.println("Connection established.");
+                return;
+            } catch (IOException e) {
+                System.out.println("Waiting for server connection.....");
+                try {
+                    Thread.sleep(5000); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Client interrupted while waiting for connection.");
+                    System.exit(1);
+                }
+            }
+        }
+    }
 }
