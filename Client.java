@@ -73,6 +73,42 @@ public class Client {
 
     private static void runManual(String serverIP, int port, String appName)
     { 
+       Scanner scanner = new Scanner(System.in);
+       System.out.println("Manual mode. Enter log level and message separately.");
+
+        while (true) 
+        {
+       
+            System.out.print("Enter log level (DEBUG, INFO, WARN, ERROR, FATAL) or 'exit' to quit: ");
+            String logLevel = scanner.nextLine().trim().toUpperCase();
+        
+            if (logLevel.equalsIgnoreCase("EXIT")) 
+            {
+                break;
+            }
+
+       
+            if (!logLevel.matches("DEBUG|INFO|WARN|ERROR|FATAL"))
+            {
+                System.out.println("Invalid log level! Please enter a valid log level.");
+                continue;
+            }
+
+        
+            System.out.print("Enter log message: ");
+            String logMessage = scanner.nextLine().trim();
+
+            if (logMessage.isEmpty()) 
+            {
+                System.out.println("Log message cannot be empty!");
+                continue;
+            }
+
+        
+            String jsonPayload = createJsonPayload(logLevel, logMessage, appName);
+
+        }
+       scanner.close();
     }
 
     private static void runAutomated(String serverIP, int port, String appName) 
