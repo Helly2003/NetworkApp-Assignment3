@@ -134,6 +134,31 @@ public class Client {
 
     private static void runAutomatedTesting(String serverIP, int port, String appName) 
     {
+        System.out.println("Running full automated tests...");
+        String[] levels = {"DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+        String[] testMessages = {
+            "System initialized successfully.",
+            "User login attempt successful.",
+            "Disk space running low.",
+            "Unexpected database error occurred!",
+            "Critical system failure! Immediate attention needed."
+        };
+    
+        int numTests = 5; 
+    
+        ExecutorService executor = Executors.newFixedThreadPool(2); 
+    
+        for (int i = 0; i < numTests; i++) 
+        {
+            final int index = i % testMessages.length; 
+            executor.execute(() -> {
+                String jsonPayload = createJsonPayload(levels[index % levels.length], testMessages[index], appName);
+                sendLog(serverIP, port, jsonPayload);
+            });
+        }
+    
+        executor.shutdown();
+        System.out.println("Automated test completed.");
     }
 
     private static void runAbuseTest(String serverIP, int port, String appName)
