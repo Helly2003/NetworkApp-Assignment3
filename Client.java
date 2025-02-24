@@ -113,6 +113,22 @@ public class Client {
 
     private static void runAutomated(String serverIP, int port, String appName) 
     {
+        System.out.println("Automated mode. Sending test log messages.");
+        String[] levels = {"DEBUG", "INFO", "WARN", "ERROR"};
+
+        for (int i = 0; i < 100; i++) 
+        {
+            String level = levels[i % levels.length];
+            String message = "Automated test message " + i;
+            String jsonPayload = createJsonPayload(level, message, appName);
+          
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Thread was interrupted: " + e.getMessage());
+            }
+        }
     }
 
     private static void runAutomatedTesting(String serverIP, int port, String appName) 
