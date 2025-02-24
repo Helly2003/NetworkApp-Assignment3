@@ -106,7 +106,7 @@ public class Client {
 
         
             String jsonPayload = createJsonPayload(logLevel, logMessage, appName);
-
+            sendLog(serverIP, port, jsonPayload);
         }
        scanner.close();
     }
@@ -121,7 +121,8 @@ public class Client {
             String level = levels[i % levels.length];
             String message = "Automated test message " + i;
             String jsonPayload = createJsonPayload(level, message, appName);
-          
+            sendLog(serverIP, port, jsonPayload);
+
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
@@ -150,5 +151,22 @@ public class Client {
         return "{\"logLevel\":\"" + escapeJson(logLevel) + "\", " +
                "\"logMessage\":\"" + escapeJson(logMessage) + "\", " +
                "\"appName\":\"" + escapeJson(appName) + "\"}";
+    }
+
+    private static void sendLog(String serverIP, int port, String jsonPayload) 
+    {
+        try (Socket socket = new Socket(serverIP, port);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+    
+            out.println(jsonPayload);
+            String response = in.readLine();
+            
+            System.out.println("Server Response:");
+            System.out.println(response);
+            
+        } catch (IOException e) {
+            System.err.println("Error communicating with server: " + e.getMessage());
+        }
     }
 }
