@@ -1,3 +1,11 @@
+/*
+    Name        : Jay Patel  (8888384)  
+                  Helly Shah (8958841)  
+    Project Name: Client.java  
+    Date        : 25th February, 2025  
+    Description : A logging client that sends log messages to a server in different modes.  
+*/
+
 import java.io.*;
 import java.net.*;
 import java.util.Random;
@@ -7,7 +15,7 @@ import java.util.concurrent.Executors;
 
 public class Client {
     public static void main(String[] args) {
-    
+        // Ensure server IP and port are provided along with the mode
         if (args.length < 3) {
             System.err.println("Usage: java LoggingClient <serverIP> <port> <manual|auto|test|abuse>");
             System.exit(1);
@@ -18,7 +26,7 @@ public class Client {
         String mode = args[2].toLowerCase(); 
         String appName = "JavaClient";
     
-       
+        // Parse the port number
         try {
             port = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
@@ -28,6 +36,7 @@ public class Client {
 
 	    waitForConnection(serverIP, port);
 	
+        // Choose execution mode based on command-line input
 	    switch (mode) 
 	    {
             case "manual":
@@ -49,6 +58,13 @@ public class Client {
 
     }
     
+    /*
+      * FUNCTION : waitForConnection
+      * DESCRIPTION : Keeps trying to connect to the server until successful.
+      * PARAMETERS : serverIP - Server's IP address, port - Server's port number.
+      * RETURNS : void
+    */
+
     private static void waitForConnection(String serverIP, int port)
     {
         System.out.println("Attempting to connect to server at " + serverIP + ":" + port);
@@ -61,7 +77,7 @@ public class Client {
             } catch (IOException e) {
                 System.out.println("Waiting for server connection.....");
                 try {
-                    Thread.sleep(5000); 
+                    Thread.sleep(5000); // Retry every 5 seconds
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     System.err.println("Client interrupted while waiting for connection.");
@@ -70,6 +86,13 @@ public class Client {
             }
         }
     }
+
+    /*
+      * FUNCTION : runManual
+      * DESCRIPTION : Lets the user enter log messages manually and send them to the server.
+      * PARAMETERS : serverIP - Server's IP, port - Server's port, appName - Client app name.
+      * RETURNS : void
+    */
 
     private static void runManual(String serverIP, int port, String appName)
     { 
@@ -81,20 +104,21 @@ public class Client {
        
             System.out.print("Enter log level (DEBUG, INFO, WARN, ERROR, FATAL) or 'exit' to quit: ");
             String logLevel = scanner.nextLine().trim().toUpperCase();
-        
+         
+            
             if (logLevel.equalsIgnoreCase("EXIT")) 
             {
                 break;
             }
 
-       
+            // Validate log level
             if (!logLevel.matches("DEBUG|INFO|WARN|ERROR|FATAL"))
             {
                 System.out.println("Invalid log level! Please enter a valid log level.");
                 continue;
             }
 
-        
+            // Get log message
             System.out.print("Enter log message: ");
             String logMessage = scanner.nextLine().trim();
 
@@ -110,6 +134,13 @@ public class Client {
         }
        scanner.close();
     }
+
+    /*
+      * FUNCTION : runAutomated
+      * DESCRIPTION : Sends 100 automated log messages to the server.
+      * PARAMETERS : serverIP - Server's IP, port - Server's port, appName - Client app name.
+      * RETURNS : void
+    */
 
     private static void runAutomated(String serverIP, int port, String appName) 
     {
@@ -132,6 +163,13 @@ public class Client {
         }
     }
 
+    /*
+      * FUNCTION : runAutomatedTesting
+      * DESCRIPTION : Simulates multiple clients sending test log messages.
+      * PARAMETERS : serverIP - Server's IP, port - Server's port, appName - Client app name.
+      * RETURNS : void
+    */
+
     private static void runAutomatedTesting(String serverIP, int port, String appName) 
     {
         System.out.println("Running full automated tests...");
@@ -144,13 +182,13 @@ public class Client {
             "Critical system failure! Immediate attention needed."
         };
     
-        int numTests = 5; 
+        int numTests = 5; // Define the total number of test logs to be sent
     
-        ExecutorService executor = Executors.newFixedThreadPool(2); 
+        ExecutorService executor = Executors.newFixedThreadPool(2); // Simulating multiple clients
     
         for (int i = 0; i < numTests; i++) 
         {
-            final int index = i % testMessages.length; 
+            final int index = i % testMessages.length; // Ensure we do not go out of bounds
             executor.execute(() -> {
                 String jsonPayload = createJsonPayload(levels[index % levels.length], testMessages[index], appName);
                 sendLog(serverIP, port, jsonPayload);
@@ -160,15 +198,21 @@ public class Client {
         executor.shutdown();
         System.out.println("Automated test completed.");
     }
+    /*
+      * FUNCTION : runAbuseTest
+      * DESCRIPTION : Simulates rapid log spam to test server limits.
+      * PARAMETERS : serverIP - Server's IP, port - Server's port, appName - Client app name.
+      * RETURNS : void
+    */
 
     private static void runAbuseTest(String serverIP, int port, String appName)
     {
       System.out.println("Running abuse prevention test...");
 
-      ExecutorService executor = Executors.newFixedThreadPool(100); 
+      ExecutorService executor = Executors.newFixedThreadPool(100); // Simulating multiple abusive clients
       Random random = new Random();
 
-      for (int i = 0; i < 20; i++) 
+      for (int i = 0; i < 20; i++) // Simulate 20 rapid log requests
       { 
          executor.execute(() -> {
          String jsonPayload = createJsonPayload("ERROR", "Spam log message " + random.nextInt(1000), appName);
@@ -179,12 +223,25 @@ public class Client {
         executor.shutdown();
         System.out.println("Abuse test completed. Check server logs for rate limiting.");
     }
-    
+    /*
+      * FUNCTION : escapeJson
+      * DESCRIPTION : Escapes quotes in a string for JSON formatting.
+      * PARAMETERS : s - The input string.
+      * RETURNS : Escaped string.
+    */
+
     private static String escapeJson(String s) 
     {
         if (s == null) return "";
         return s.replace("\"", "\\\"");
     }
+
+    /*
+      * FUNCTION : createJsonPayload
+      * DESCRIPTION : Formats log data as a JSON string.
+      * PARAMETERS : logLevel - Log severity, logMessage - Log content, appName - Client app name.
+     * RETURNS : JSON-formatted log string.
+    */
 
     private static String createJsonPayload(String logLevel, String logMessage, String appName) 
     {
@@ -192,6 +249,13 @@ public class Client {
                "\"logMessage\":\"" + escapeJson(logMessage) + "\", " +
                "\"appName\":\"" + escapeJson(appName) + "\"}";
     }
+
+    /*
+      * FUNCTION : sendLog
+      * DESCRIPTION : Sends a log message to the server and prints the response.
+      * PARAMETERS : serverIP - Server's IP, port - Server's port, jsonPayload - Log message in JSON format.
+      * RETURNS : void
+    */
 
     private static void sendLog(String serverIP, int port, String jsonPayload) 
     {
