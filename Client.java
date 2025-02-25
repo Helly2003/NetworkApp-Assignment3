@@ -163,6 +163,21 @@ public class Client {
 
     private static void runAbuseTest(String serverIP, int port, String appName)
     {
+      System.out.println("Running abuse prevention test...");
+
+      ExecutorService executor = Executors.newFixedThreadPool(100); 
+      Random random = new Random();
+
+      for (int i = 0; i < 20; i++) 
+      { 
+         executor.execute(() -> {
+         String jsonPayload = createJsonPayload("ERROR", "Spam log message " + random.nextInt(1000), appName);
+         sendLog(serverIP, port, jsonPayload);
+         });
+      }
+
+        executor.shutdown();
+        System.out.println("Abuse test completed. Check server logs for rate limiting.");
     }
     
     private static String escapeJson(String s) 
